@@ -21,6 +21,7 @@ namespace YARG.Input {
 		public const string TILT = "tilt";
 		public const string PAUSE = "pause";
 
+		private bool inChordGamepad = false;
 		private List<NoteInfo> botChart;
 
 		public delegate void FretChangeAction(bool pressed, int fret);
@@ -59,12 +60,31 @@ namespace YARG.Input {
 		}
 
 		protected override void UpdatePlayerMode() {
+
 			void HandleFret(string mapping, int index) {
-				if (WasMappingPressed(mapping)) {
-					FretChangeEvent?.Invoke(true, index);
-				} else if (WasMappingReleased(mapping)) {
-					FretChangeEvent?.Invoke(false, index);
+				if (!GamepadMode) {
+					if (WasMappingPressed(mapping)) {
+						FretChangeEvent?.Invoke(true, index);
+						
+					}
+					else if (WasMappingReleased(mapping)) {
+						FretChangeEvent?.Invoke(false, index);
+					}
 				}
+				else {
+					if (WasMappingPressed(mapping)) {
+						FretChangeEvent?.Invoke(true, index);
+						if (!inChordGamepad) {
+							StrumEvent?.Invoke();
+							inChordGamepad = true;
+						}
+					}
+					else if (WasMappingReleased(mapping)) {
+						FretChangeEvent?.Invoke(false, index);
+						inChordGamepad = false;
+					}
+				}
+				
 			}
 
 			// Deal with fret inputs

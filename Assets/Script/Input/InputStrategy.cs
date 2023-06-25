@@ -15,6 +15,7 @@ using YARG.Settings;
 namespace YARG.Input {
 	public abstract class InputStrategy : IDisposable {
 		public bool BotMode { get; set; }
+		public bool GamepadMode { get; set; }
 		protected int BotChartIndex;
 
 		private ISantrollerHaptics _haptics;

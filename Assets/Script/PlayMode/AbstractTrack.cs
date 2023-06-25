@@ -251,7 +251,8 @@ namespace YARG.PlayMode {
 					}
 				}
 			}
-
+			SetGamepadIcon();
+			SetPlayerName();
 			StartTrack();
 		}
 
@@ -366,6 +367,24 @@ namespace YARG.PlayMode {
 				currentBeatIndex++;
 			}
 		}
+
+		private void SetGamepadIcon() {
+			if(player.inputStrategy.GamepadMode && !player.inputStrategy.BotMode) {
+				commonTrack.gamepadIcon.SetActive(true);
+            }
+			else {
+				commonTrack.gamepadIcon.SetActive(false);
+			}
+        }
+
+		private void SetPlayerName() {
+			if(player.inputStrategy.BotMode) {
+				commonTrack.playerName.text = player.name + " <color=#0c7027><b>(BOT)</b></color>";
+            } 
+			else {
+				commonTrack.playerName.text = player.name;
+			}
+        }
 
 		protected abstract void UpdateTrack();
 

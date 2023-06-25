@@ -43,6 +43,8 @@ namespace YARG.PlayMode {
 		public Light starPowerParticles2Light;
 		public GameObject starPowerLightIndicators;
 		public KickFlashAnimation kickFlash;
+		public GameObject gamepadIcon;
+		public TextMeshPro playerName;
 
 		[Space]
 		public Color comboSunburstColor;

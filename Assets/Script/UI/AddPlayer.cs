@@ -53,6 +53,8 @@ namespace YARG.UI {
 			All = Axis | Button | Noisy | Synthetic
 		}
 
+		private bool enableGamepadMode;
+
 		[SerializeField]
 		private GameObject deviceButtonPrefab;
 		[SerializeField]
@@ -86,6 +88,7 @@ namespace YARG.UI {
 		private IMicDevice _selectedMic = null;
 
 		private bool _botMode = false;
+		private bool _gamepadMode = false;
 		private string _playerName = null;
 		private InputStrategy _inputStrategy = null;
 
@@ -257,6 +260,7 @@ namespace YARG.UI {
 			_inputStrategy.InputDevice = _selectedDevice;
 			_inputStrategy.MicDevice = _selectedMic;
 			_inputStrategy.BotMode = _botMode;
+			_inputStrategy.GamepadMode = _gamepadMode;
 
 			_playerName = playerNameField.text;
 
@@ -293,11 +297,14 @@ namespace YARG.UI {
 			bindContainer.SetActive(true);
 			bindHeaderContainer.SetActive(true);
 			UpdateState(State.Bind);
+			
 
 			// Destroy old bindings
 			foreach (Transform t in bindingsContainer) {
 				Destroy(t.gameObject);
 			}
+
+			
 
 			// Add bindings
 			foreach (var binding in _inputStrategy.Mappings.Values) {
@@ -366,6 +373,7 @@ namespace YARG.UI {
 									 where ControlAllowedAndActive(control, eventPtr)
 									 select control as InputControl<float>;
 
+				
 				if (activeControls != null) {
 					foreach (var ctrl in activeControls) {
 						if (!_bindGroupingList.Contains(ctrl)) {
@@ -431,6 +439,20 @@ namespace YARG.UI {
 		public void SyntheticAllowedChanged(bool enabled)
 			=> AllowedControlChanged(enabled, AllowedControl.Synthetic);
 
+		public void GamepadModeChanged(bool enabled) {
+			enableGamepadMode = enabled;
+		}
+		
+		private void SetGamepadModeStatus() {
+			if (enableGamepadMode) {
+				_inputStrategy.GamepadMode = true;
+			}
+			else {
+				_inputStrategy.GamepadMode = false;
+			}
+		}
+		
+
 		private bool ControlAllowedAndActive(InputControl control, InputEventPtr eventPtr) {
 			// AnyKeyControl is excluded as it would always be active
 			if (control is not InputControl<float> floatControl || floatControl is AnyKeyControl) {
@@ -470,6 +492,7 @@ namespace YARG.UI {
 		public void DoneBind() {
 			Navigator.Instance.PopScheme();
 
+			SetGamepadModeStatus();
 			// Stop event listener
 			_currentDeviceListener?.Dispose();
 			_currentDeviceListener = null;
@@ -494,6 +517,7 @@ namespace YARG.UI {
 			}
 
 			MainMenu.Instance.ShowEditPlayers();
+			
 		}
 
 		private void StartResolve(List<InputControl<float>> controls) {
